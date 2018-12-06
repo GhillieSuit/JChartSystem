@@ -18,7 +18,9 @@ public class LoginFrame extends javax.swing.JFrame {
         setResizable(false);        //프레임 크기변경 제한
         setLocationRelativeTo(null);   //프레임 가운데 위치
         setIconImage(img.getImage());
-        txtSignupID.setDocument(new Limit(20)); //글자수 제한
+        txtID.setDocument(new Limit(20)); //글자수 제한
+        txtPW.setDocument(new Limit(20));
+        txtSignupID.setDocument(new Limit(20));
         txtSignupPW.setDocument(new Limit(20));
         
         try {
@@ -30,23 +32,24 @@ public class LoginFrame extends javax.swing.JFrame {
         }
     }
     
-    public String makeSQLWhere(String id, String pw) {
+    /*public String makeSQLWhere(String id, String pw) {
         String where = " where id = '";
         where += id;
         where += "' and pw = password('";
         where += pw;
         where += "')";
         return where;
-    }
+    }*/
     
     public boolean loginCheck(String id, String pw) {
         boolean result = false;
-        SQL = "Select count(*) as login, job from member";
-        SQL += makeSQLWhere(id, pw);
+        /*SQL = "Select count(*) as login, job from member";
+        SQL += makeSQLWhere(id, pw);*/
+        SQL = "call signin_pro('" + id + "','" + pw + "')";
         try {
             DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
             while(DBM.DB_rs.next()){
-                switch(DBM.DB_rs.getString("login")){
+                switch(DBM.DB_rs.getString("count")){
                     case "0":
                         result = false;
                         break;

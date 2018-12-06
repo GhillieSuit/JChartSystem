@@ -27,4 +27,6 @@ public class Limit extends PlainDocument{
         if (getLength() + str.length() <= limit) 
             super.insertString(offset, str, attr);
     }
+    
+   
 }

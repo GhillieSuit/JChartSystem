@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.event.ChangeListener;
 
 public class MainFrame extends javax.swing.JFrame {
     ImageIcon img = new ImageIcon("./src/icon.png");
@@ -28,10 +29,14 @@ public class MainFrame extends javax.swing.JFrame {
         setVisible(true);
         setResizable(true);
         setSize(1300,720 );  
-        this.setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
+        setIconImage(img.getImage());
+        Panel_Chart.setComponentZOrder(DateChooserTo, 0);
+        Panel_Chart.setComponentZOrder(DateChooserFrom, 1);
+        Panel_Chart.setComponentZOrder(Panel_Chart_layer, 2);
         
         try {
-            DBM.strURL += "AQC_db";
+            DBM.strURL += "DHT_db";
             DBM.dbOpen();
             //DBM.dbClose();
         } catch (Exception e) {
@@ -46,20 +51,9 @@ public class MainFrame extends javax.swing.JFrame {
                }
             }
         });
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        String datetime = dtf.format(now);
-        Date date = null;
-        Date time = null;
-        try {
-            date = new SimpleDateFormat("yyyy.MM.dd").parse(datetime);
-            time = new SimpleDateFormat("HH:mm").parse(datetime);
-        } catch (ParseException ex) {
-            System.out.println(ex.getMessage());
-        }
-        DateChooserFrom.setDate(date);
-        DateChooserTo.setDate(date);
-        TimeChooserFrom.setDate(time);
+       
+        DateTime();
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -71,19 +65,25 @@ public class MainFrame extends javax.swing.JFrame {
         Panel_Main = new javax.swing.JPanel();
         Panel_Chart = new javax.swing.JPanel();
         Panel_Chart_layer = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btnDraw = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
         jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        lblFrom = new javax.swing.JLabel();
         DateChooserFrom = new com.toedter.calendar.JDateChooser();
-        jLabel2 = new javax.swing.JLabel();
+        lblTo = new javax.swing.JLabel();
         DateChooserTo = new com.toedter.calendar.JDateChooser();
-        TimeChooserFrom = new com.toedter.calendar.JDateChooser();
+        TimeHourFrom = new javax.swing.JSpinner();
+        lblFromHour = new javax.swing.JLabel();
+        TimeHourTo = new javax.swing.JSpinner();
+        lblToHour = new javax.swing.JLabel();
+        TimeMinuteFrom = new javax.swing.JSpinner();
+        TimeMinuteTo = new javax.swing.JSpinner();
+        lblFromMinute = new javax.swing.JLabel();
+        lblToMinute = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 720));
-        setPreferredSize(new java.awt.Dimension(1280, 720));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -130,10 +130,11 @@ public class MainFrame extends javax.swing.JFrame {
             .addGap(0, 534, Short.MAX_VALUE)
         );
 
-        jButton2.setText("jButton2");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnDraw.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
+        btnDraw.setText("Draw");
+        btnDraw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnDrawActionPerformed(evt);
             }
         });
 
@@ -141,20 +142,62 @@ public class MainFrame extends javax.swing.JFrame {
 
         jButton3.setText("jButton3");
 
-        jLabel1.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
-        jLabel1.setText("From");
+        lblFrom.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
+        lblFrom.setText("From");
 
         DateChooserFrom.setDateFormatString("yyyy. MM. dd");
         DateChooserFrom.setDoubleBuffered(false);
         DateChooserFrom.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
 
-        jLabel2.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
-        jLabel2.setText("To");
+        lblTo.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
+        lblTo.setText("To");
 
         DateChooserTo.setDateFormatString("yyyy. MM. dd");
         DateChooserTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
 
-        TimeChooserFrom.setDateFormatString("mm");
+        TimeHourFrom.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        TimeHourFrom.setModel(new javax.swing.SpinnerNumberModel(0, -1, 24, 1));
+        TimeHourFrom.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                TimeHourFromStateChanged(evt);
+            }
+        });
+
+        lblFromHour.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        lblFromHour.setText("시");
+
+        TimeHourTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        TimeHourTo.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+        TimeHourTo.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                TimeHourToStateChanged(evt);
+            }
+        });
+
+        lblToHour.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        lblToHour.setText("시");
+
+        TimeMinuteFrom.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        TimeMinuteFrom.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        TimeMinuteFrom.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                TimeMinuteFromStateChanged(evt);
+            }
+        });
+
+        TimeMinuteTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        TimeMinuteTo.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        TimeMinuteTo.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                TimeMinuteToStateChanged(evt);
+            }
+        });
+
+        lblFromMinute.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        lblFromMinute.setText("분");
+
+        lblToMinute.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        lblToMinute.setText("분");
 
         javax.swing.GroupLayout Panel_ChartLayout = new javax.swing.GroupLayout(Panel_Chart);
         Panel_Chart.setLayout(Panel_ChartLayout);
@@ -170,14 +213,31 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
+                            .addComponent(lblFrom)
+                            .addComponent(lblTo)
                             .addComponent(DateChooserFrom, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                             .addComponent(DateChooserTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TimeChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 770, Short.MAX_VALUE)
-                        .addComponent(jButton2)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblFromHour)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblFromMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblToHour)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblToMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnDraw)))
+                        .addGap(0, 722, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         Panel_ChartLayout.setVerticalGroup(
@@ -189,19 +249,29 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3))
-                    .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, Panel_ChartLayout.createSequentialGroup()
-                            .addGap(22, 22, 22)
-                            .addComponent(jButton2))
-                        .addGroup(Panel_ChartLayout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblFromHour)
+                                    .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblFromMinute)))
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addComponent(lblFrom)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(TimeChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblTo)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblToHour)
+                                .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblToMinute)
+                                .addComponent(btnDraw))
                             .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
@@ -230,10 +300,35 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void DateTime() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String datetime1 = dtf.format(now.minusHours(1));
+        String datetime2 = dtf.format(now);
+        Date date1 = null;
+        Date date2 = null;
+        int hour1 = Integer.parseInt(datetime1.substring(11,13));
+        int hour2 = Integer.parseInt(datetime2.substring(11,13));
+        int minute1 = Integer.parseInt(datetime1.substring(14,16));
+        int minute2 = Integer.parseInt(datetime2.substring(14,16));
+        try {
+            date1 = new SimpleDateFormat("yyyy.MM.dd").parse(datetime1);
+            date2 = new SimpleDateFormat("yyyy.MM.dd").parse(datetime2);
+        } catch (ParseException ex) {
+            System.out.println(ex.getMessage());
+        }
+        DateChooserFrom.setDate(date1);
+        TimeHourFrom.setValue(hour1);
+        TimeMinuteFrom.setValue(minute1);
+        DateChooserTo.setDate(date2);
+        TimeHourTo.setValue(hour2);
+        TimeMinuteTo.setValue(minute2);
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.dispose();
+        //this.dispose();
         
-        System.exit(0);
+        //System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -244,28 +339,99 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
         String title = "title";
         ArrayList<ChartElement> list = new ArrayList<ChartElement>();
         int width = 600;
         int height = 600;
-        list.add(new ChartElement("A", 49));
-        list.add(new ChartElement("B", 50));
-        list.add(new ChartElement("C", 30));
-        list.add(new ChartElement("D", 45));
-        list.add(new ChartElement("E", 29));
-        browser.loadHTML(new GoogleAPI().getLineChart(title, list, width, height));
+        String From = "";
+        String To = "";
+        String SQL = "Select tem, hum, datetime from dht_datasheet where datetime between ";
+        
+        SimpleDateFormat getDate = new SimpleDateFormat("yyyyMMdd");
+        From = getDate.format(DateChooserFrom.getDate());
+        if(String.valueOf(TimeHourFrom.getValue()).length() < 2)
+            From += "0";
+        From += TimeHourFrom.getValue();
+        if(String.valueOf(TimeMinuteFrom.getValue()).length() < 2)
+            From += "0";
+        From += TimeMinuteFrom.getValue();
+        From += "00";
+        SQL += From + " and ";
+        To = getDate.format(DateChooserTo.getDate());
+        if(String.valueOf(TimeHourTo.getValue()).length() < 2)
+            To += "0";
+        To += TimeHourTo.getValue();
+        if(String.valueOf(TimeMinuteTo.getValue()).length() < 2)
+            To += "0";
+        To += TimeMinuteTo.getValue();
+        To += "59";
+        SQL += To;
+        
+        try {
+            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+            while(DBM.DB_rs.next()){
+                list.add(new ChartElement(DBM.DB_rs.getString("datetime"), DBM.DB_rs.getInt("tem"), DBM.DB_rs.getInt("hum")));
+            }
+        DBM.DB_rs.close();
+        } catch (Exception e) {
+            System.out.println("SQLException : " + e.getMessage());
+        }
 
-        //Panel_Chart_layer.setLayout(null);
+        browser.loadHTML(new GoogleAPI().getLineChart(title, list, width, height));
+        System.out.println(new GoogleAPI().getLineChart(title, list, width, height));
+        System.out.println(SQL);
+                
         Panel_Chart_layer.setLayout(new BorderLayout());
         browserView.setSize(1251, 534);
         Panel_Chart_layer.add(browserView, BorderLayout.CENTER);
-        //Panel_Chart_layer.add(browserView, BorderLayout.CENTER);
         Panel_Chart_layer.setComponentZOrder(browserView, 0);
         Panel_Chart_layer.revalidate();
         Panel_Chart_layer.repaint();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnDrawActionPerformed
 
+    // <editor-fold defaultstate="collapsed" desc="TimePick">
+    private void TimeHourFromStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeHourFromStateChanged
+        int value = Integer.parseInt(String.valueOf(TimeHourFrom.getValue()));
+        if (value > 24) {
+            TimeHourFrom.setValue(23);
+        } else if (value > 23) {
+            TimeHourFrom.setValue(0);
+        } else if (value < -1) {
+            TimeHourFrom.setValue(0);
+        } else if (value < 0) {
+            TimeHourFrom.setValue(23);
+        }
+    }//GEN-LAST:event_TimeHourFromStateChanged
+
+    private void TimeHourToStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeHourToStateChanged
+        int value = Integer.parseInt(String.valueOf(TimeHourTo.getValue()));
+        if (value > 23) {
+            TimeHourTo.setValue(23);
+        } else if (value < 0) {
+            TimeHourTo.setValue(0);
+        }
+    }//GEN-LAST:event_TimeHourToStateChanged
+
+    private void TimeMinuteFromStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeMinuteFromStateChanged
+        int value = Integer.parseInt(String.valueOf(TimeMinuteFrom.getValue()));
+        if (value > 59) {
+            TimeMinuteFrom.setValue(59);
+        } else if (value < 0) {
+            TimeMinuteFrom.setValue(0);
+        }
+    }//GEN-LAST:event_TimeMinuteFromStateChanged
+
+    private void TimeMinuteToStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeMinuteToStateChanged
+        int value = Integer.parseInt(String.valueOf(TimeMinuteTo.getValue()));
+        if (value > 59) {
+            TimeMinuteTo.setValue(59);
+        } else if (value < 0) {
+            TimeMinuteTo.setValue(0);
+        }
+    }//GEN-LAST:event_TimeMinuteToStateChanged
+// </editor-fold> 
+    
     public static void main(String args[]) {
 
         try {
@@ -299,13 +465,20 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel Panel_Chart_layer;
     private javax.swing.JPanel Panel_Main;
     private javax.swing.JTabbedPane TabbedPane1;
-    private com.toedter.calendar.JDateChooser TimeChooserFrom;
+    private javax.swing.JSpinner TimeHourFrom;
+    private javax.swing.JSpinner TimeHourTo;
+    private javax.swing.JSpinner TimeMinuteFrom;
+    private javax.swing.JSpinner TimeMinuteTo;
+    private javax.swing.JButton btnDraw;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblFrom;
+    private javax.swing.JLabel lblFromHour;
+    private javax.swing.JLabel lblFromMinute;
+    private javax.swing.JLabel lblTo;
+    private javax.swing.JLabel lblToHour;
+    private javax.swing.JLabel lblToMinute;
     // End of variables declaration//GEN-END:variables
 }
