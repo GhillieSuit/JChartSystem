@@ -4,12 +4,18 @@ import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
 import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import java.awt.BorderLayout;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -17,9 +23,10 @@ import javax.swing.JFrame;
 import javax.swing.event.ChangeListener;
 
 public class MainFrame extends javax.swing.JFrame {
-    ImageIcon img = new ImageIcon("./src/icon.png");
     private Browser browser = new Browser();
     private BrowserView browserView = new BrowserView(browser);
+    ImageIcon img = new ImageIcon("./src/icon.png");
+    Timer m_timer = new Timer();
     DB_CONN DBM = new DB_CONN();
     
     public MainFrame() {
@@ -28,7 +35,7 @@ public class MainFrame extends javax.swing.JFrame {
         setTitle("Chart System");
         setVisible(true);
         setResizable(true);
-        setSize(1300,720 );  
+        setSize(1300,760 );  
         setLocationRelativeTo(null);
         setIconImage(img.getImage());
         Panel_Chart.setComponentZOrder(DateChooserTo, 0);
@@ -36,7 +43,7 @@ public class MainFrame extends javax.swing.JFrame {
         Panel_Chart.setComponentZOrder(Panel_Chart_layer, 2);
         
         try {
-            DBM.strURL += "DHT_db";
+            DBM.strURL += "Data_db";
             DBM.dbOpen();
             //DBM.dbClose();
         } catch (Exception e) {
@@ -51,24 +58,50 @@ public class MainFrame extends javax.swing.JFrame {
                }
             }
         });
-       
-        DateTime();
         
+        TimerTask m_task = new TimerTask(){
+            @Override
+            public void run() {
+                String SQL = "call pro_select_now()";
+                try {
+                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+                    while(DBM.DB_rs.next()){
+                        if (DBM.DB_rs.getString("chk").equals("1")){
+                            txtTem.setText(DBM.DB_rs.getString("tem") + " ℃");
+                            txtHum.setText(DBM.DB_rs.getString("hum") + " %");
+                        } else {
+                            txtTem.setText("N / A");
+                            txtHum.setText("N / A");
+                        }
+                    }
+                    System.out.println("Main refreshed");
+                } catch (SQLException ex) {
+                    txtTem.setText("N / A");
+                    txtHum.setText("N / A");
+                    System.out.println("SQLException : " + ex.getMessage());
+                }
+            }
+        };
+        
+        DateTime();
+        m_timer.schedule(m_task, 0, 60000);
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFileChooser1 = new javax.swing.JFileChooser();
         jButton1 = new javax.swing.JButton();
         TabbedPane1 = new javax.swing.JTabbedPane();
         Panel_Main = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txtTem = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtHum = new javax.swing.JTextField();
         Panel_Chart = new javax.swing.JPanel();
         Panel_Chart_layer = new javax.swing.JPanel();
         btnDraw = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jButton3 = new javax.swing.JButton();
         lblFrom = new javax.swing.JLabel();
         DateChooserFrom = new com.toedter.calendar.JDateChooser();
         lblTo = new javax.swing.JLabel();
@@ -81,6 +114,7 @@ public class MainFrame extends javax.swing.JFrame {
         TimeMinuteTo = new javax.swing.JSpinner();
         lblFromMinute = new javax.swing.JLabel();
         lblToMinute = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 720));
@@ -97,24 +131,59 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        TabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
+        TabbedPane1.setFont(new java.awt.Font("굴림", 1, 18)); // NOI18N
         TabbedPane1.setMinimumSize(new java.awt.Dimension(1280, 691));
         TabbedPane1.setPreferredSize(new java.awt.Dimension(1280, 691));
 
+        Panel_Main.setBackground(new java.awt.Color(255, 255, 255));
         Panel_Main.setPreferredSize(new java.awt.Dimension(1000, 700));
+
+        jLabel1.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        jLabel1.setText("현재 온도");
+
+        txtTem.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        jLabel2.setText("현재 습도");
+
+        txtHum.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
 
         javax.swing.GroupLayout Panel_MainLayout = new javax.swing.GroupLayout(Panel_Main);
         Panel_Main.setLayout(Panel_MainLayout);
         Panel_MainLayout.setHorizontalGroup(
             Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1275, Short.MAX_VALUE)
+            .addGroup(Panel_MainLayout.createSequentialGroup()
+                .addGap(0, 276, Short.MAX_VALUE)
+                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(383, 383, 383))
         );
         Panel_MainLayout.setVerticalGroup(
             Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 662, Short.MAX_VALUE)
+            .addGroup(Panel_MainLayout.createSequentialGroup()
+                .addGap(207, 207, 207)
+                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
+                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(367, Short.MAX_VALUE))
         );
 
         TabbedPane1.addTab("Main", Panel_Main);
 
+        Panel_Chart.setBackground(new java.awt.Color(255, 255, 255));
+
+        Panel_Chart_layer.setBackground(new java.awt.Color(255, 255, 255));
+        Panel_Chart_layer.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chart", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("굴림", 1, 18))); // NOI18N
         Panel_Chart_layer.setMinimumSize(new java.awt.Dimension(1251, 0));
         Panel_Chart_layer.setName(""); // NOI18N
         Panel_Chart_layer.setPreferredSize(new java.awt.Dimension(1251, 558));
@@ -127,7 +196,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         Panel_Chart_layerLayout.setVerticalGroup(
             Panel_Chart_layerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addGap(0, 496, Short.MAX_VALUE)
         );
 
         btnDraw.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
@@ -138,13 +207,10 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setViewportView(jList1);
-
-        jButton3.setText("jButton3");
-
         lblFrom.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
         lblFrom.setText("From");
 
+        DateChooserFrom.setBackground(new java.awt.Color(255, 255, 255));
         DateChooserFrom.setDateFormatString("yyyy. MM. dd");
         DateChooserFrom.setDoubleBuffered(false);
         DateChooserFrom.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
@@ -152,6 +218,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblTo.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
         lblTo.setText("To");
 
+        DateChooserTo.setBackground(new java.awt.Color(255, 255, 255));
         DateChooserTo.setDateFormatString("yyyy. MM. dd");
         DateChooserTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
 
@@ -199,6 +266,14 @@ public class MainFrame extends javax.swing.JFrame {
         lblToMinute.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
         lblToMinute.setText("분");
 
+        jButton2.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
+        jButton2.setText("Export");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout Panel_ChartLayout = new javax.swing.GroupLayout(Panel_Chart);
         Panel_Chart.setLayout(Panel_ChartLayout);
         Panel_ChartLayout.setHorizontalGroup(
@@ -206,39 +281,46 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(Panel_ChartLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(Panel_ChartLayout.createSequentialGroup()
-                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblFrom)
-                            .addComponent(lblTo)
-                            .addComponent(DateChooserFrom, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(DateChooserTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(Panel_ChartLayout.createSequentialGroup()
                         .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                        .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblFrom))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblFromHour)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblFromMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblToHour)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblToMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnDraw)))
-                        .addGap(0, 722, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                        .addComponent(lblToHour)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblToMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                        .addComponent(lblFromHour)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(lblFromMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                                .addGap(43, 43, 43)
+                                                .addComponent(jButton2))))))
+                            .addComponent(lblTo))
+                        .addGap(191, 825, Short.MAX_VALUE))))
         );
         Panel_ChartLayout.setVerticalGroup(
             Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -246,35 +328,30 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(Panel_ChartLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3))
-                    .addGroup(Panel_ChartLayout.createSequentialGroup()
-                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblFromHour)
-                                    .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblFromMinute)))
-                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                .addComponent(lblFrom)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblTo)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblToHour)
-                                .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblToMinute)
-                                .addComponent(btnDraw))
-                            .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+                                .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblFromHour)
+                                .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblFromMinute))
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addComponent(lblFrom)
+                                .addGap(2, 2, 2)
+                                .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(8, 8, 8)
+                        .addComponent(lblTo))
+                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblToHour)
+                        .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblToMinute)
+                        .addComponent(btnDraw))
+                    .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -342,12 +419,12 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
         String title = "title";
         ArrayList<ChartElement> list = new ArrayList<ChartElement>();
-        int width = 600;
-        int height = 600;
+        int width = 1220;
+        int height = 400;
         String From = "";
         String To = "";
-        String SQL = "Select tem, hum, datetime from dht_datasheet where datetime between ";
-        
+
+        String SQL = "call pro_select_DHT(";     
         SimpleDateFormat getDate = new SimpleDateFormat("yyyyMMdd");
         From = getDate.format(DateChooserFrom.getDate());
         if(String.valueOf(TimeHourFrom.getValue()).length() < 2)
@@ -357,7 +434,7 @@ public class MainFrame extends javax.swing.JFrame {
             From += "0";
         From += TimeMinuteFrom.getValue();
         From += "00";
-        SQL += From + " and ";
+        SQL += From + ", ";
         To = getDate.format(DateChooserTo.getDate());
         if(String.valueOf(TimeHourTo.getValue()).length() < 2)
             To += "0";
@@ -366,7 +443,7 @@ public class MainFrame extends javax.swing.JFrame {
             To += "0";
         To += TimeMinuteTo.getValue();
         To += "59";
-        SQL += To;
+        SQL += To + ")";
         
         try {
             DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
@@ -432,6 +509,33 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_TimeMinuteToStateChanged
 // </editor-fold> 
     
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        FileWriter writer = null;
+        try {
+            String csvFile = "./abc.csv";
+            jFileChooser1.showSaveDialog(null);
+            writer = new FileWriter(csvFile);
+            CSV_Export.writeLine(writer, Arrays.asList("a", "b", "c", "d"));
+            //custom separator + quote
+            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bb,b", "cc,c"), ',', '"');
+            //custom separator + quote
+            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bbb", "cc,c"), '|', '\'');
+            //double-quotes
+            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bbb", "cc\"c"));
+            writer.flush();
+            writer.close();
+        } catch (IOException ex) {
+            System.out.println("IOException : " + ex.getMessage());
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                System.out.println("IOException : " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    
     public static void main(String args[]) {
 
         try {
@@ -471,14 +575,17 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSpinner TimeMinuteTo;
     private javax.swing.JButton btnDraw;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JList<String> jList1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JFileChooser jFileChooser1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblFromHour;
     private javax.swing.JLabel lblFromMinute;
     private javax.swing.JLabel lblTo;
     private javax.swing.JLabel lblToHour;
     private javax.swing.JLabel lblToMinute;
+    private javax.swing.JTextField txtHum;
+    private javax.swing.JTextField txtTem;
     // End of variables declaration//GEN-END:variables
 }
