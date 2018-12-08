@@ -93,6 +93,10 @@ public class MainFrame extends javax.swing.JFrame {
         
         DateTime();
         m_timer.schedule(m_task, 0, 60000);
+        
+        Panel_Chart_layer.setLayout(new BorderLayout());
+        Panel_Chart_layer.add(browserView, BorderLayout.CENTER);
+        Panel_Chart_layer.setComponentZOrder(browserView, 0);
     }
     
     @SuppressWarnings("unchecked")
@@ -157,11 +161,13 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
         jLabel1.setText("현재 온도");
 
+        txtTem.setEditable(false);
         txtTem.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
         jLabel2.setText("현재 습도");
 
+        txtHum.setEditable(false);
         txtHum.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
 
         javax.swing.GroupLayout Panel_MainLayout = new javax.swing.GroupLayout(Panel_Main);
@@ -172,12 +178,12 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(0, 276, Short.MAX_VALUE)
                 .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 305, Short.MAX_VALUE)
                 .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(383, 383, 383))
+                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(454, 454, 454))
         );
         Panel_MainLayout.setVerticalGroup(
             Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,12 +349,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lblFrom)
                 .addGap(3, 3, 3)
-                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblFromHour)
+                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblFromMinute))
+                    .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblFromHour)
+                        .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblFromMinute)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTo)
@@ -493,10 +500,7 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println(new GoogleAPI().getLineChart(title, list, width, height));
         System.out.println(SQL);
                 
-        Panel_Chart_layer.setLayout(new BorderLayout());
         browserView.setSize(Panel_Chart_layer.getWidth()-20, Panel_Chart_layer.getHeight()-15);
-        Panel_Chart_layer.add(browserView, BorderLayout.CENTER);
-        Panel_Chart_layer.setComponentZOrder(browserView, 0);
         Panel_Chart_layer.revalidate();
         Panel_Chart_layer.repaint();
     }

@@ -109,15 +109,15 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="0" pref="276" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtTem" alignment="0" min="-2" pref="191" max="-2" attributes="0"/>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtTem" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="234" max="32767" attributes="0"/>
+                      <EmptySpace pref="305" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtHum" min="-2" pref="191" max="-2" attributes="0"/>
+                          <Component id="txtHum" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="383" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="454" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -150,6 +150,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtTem">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="&#xad74;&#xb9bc;" size="24" style="1"/>
                 </Property>
@@ -165,6 +166,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtHum">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="&#xad74;&#xb9bc;" size="24" style="1"/>
                 </Property>
@@ -243,12 +245,14 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblFrom" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="TimeHourFrom" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblFromHour" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="DateChooserFrom" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="TimeMinuteFrom" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblFromMinute" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="TimeHourFrom" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblFromHour" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="TimeMinuteFrom" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblFromMinute" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
