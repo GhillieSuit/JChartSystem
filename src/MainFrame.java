@@ -5,12 +5,15 @@ import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import java.awt.*;
 import java.io.*;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -72,7 +75,8 @@ public class MainFrame extends javax.swing.JFrame {
             public void run() {
                 String SQL = "call pro_select_now()";
                 try {
-                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+                    DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+                    DBM.DB_rs = DBM.DB_pstm.executeQuery();
                     while(DBM.DB_rs.next()){
                         if (DBM.DB_rs.getString("chk").equals("1")){
                             txtTem.setText(DBM.DB_rs.getString("tem") + " ℃");
@@ -82,6 +86,8 @@ public class MainFrame extends javax.swing.JFrame {
                             txtHum.setText("N / A");
                         }
                     }
+                    DBM.DB_rs.close();
+                    DBM.DB_pstm.close();
                     System.out.println("Main refreshed");
                 } catch (SQLException ex) {
                     txtTem.setText("N / A");
@@ -435,6 +441,7 @@ public class MainFrame extends javax.swing.JFrame {
         loginform.txtID.requestFocus();         //포커스 설정
         loginform.txtID.setFocusable(true);
         try {                                   //db 재연결
+            DBM.dbClose();
             loginform.DBM.dbOpen();
         } catch (IOException ex) {
             System.out.println("SQLException : " + ex.getMessage());
@@ -450,12 +457,13 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private String makeSQL(){
-        String SQL = "call pro_select_DHT(";
+    private PreparedStatement makeSQL(){
+        String SQL = "call pro_select_DHT(?, ?)";
         String From = "";
         String To = "";
         
         SimpleDateFormat getDate = new SimpleDateFormat("yyyyMMdd");
+        
         From = getDate.format(DateChooserFrom.getDate());
         if(String.valueOf(TimeHourFrom.getValue()).length() < 2)
             From += "0";
@@ -464,7 +472,7 @@ public class MainFrame extends javax.swing.JFrame {
             From += "0";
         From += TimeMinuteFrom.getValue();
         From += "00";
-        SQL += From + ", ";
+        
         To = getDate.format(DateChooserTo.getDate());
         if(String.valueOf(TimeHourTo.getValue()).length() < 2)
             To += "0";
@@ -473,9 +481,16 @@ public class MainFrame extends javax.swing.JFrame {
             To += "0";
         To += TimeMinuteTo.getValue();
         To += "59";
-        SQL += To + ")";
         
-        return SQL;
+        try {
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+            DBM.DB_pstm.setString(1, From);
+            DBM.DB_pstm.setString(2, To);
+        } catch (SQLException ex) {
+            System.out.println("SQLException : " + ex.getMessage());
+        }
+  
+        return DBM.DB_pstm;
     }
     
     private void DrawChart() {
@@ -484,21 +499,20 @@ public class MainFrame extends javax.swing.JFrame {
         int width = Panel_Chart_layer.getWidth() - 50;   //1220
         int height = Panel_Chart_layer.getHeight() - 120;  //400
 
-        String SQL = makeSQL();
-        
         try {
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+            DBM.DB_pstm = makeSQL();
+            
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
             while(DBM.DB_rs.next()){
                 list.add(new ChartElement(DBM.DB_rs.getString("datetime"), DBM.DB_rs.getInt("tem"), DBM.DB_rs.getInt("hum")));
             }
-        DBM.DB_rs.close();
+            DBM.DB_rs.close();
+            DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
 
         browser.loadHTML(new GoogleAPI().getLineChart(title, list, width, height));
-        System.out.println(new GoogleAPI().getLineChart(title, list, width, height));
-        System.out.println(SQL);
                 
         browserView.setSize(Panel_Chart_layer.getWidth()-20, Panel_Chart_layer.getHeight()-15);
         Panel_Chart_layer.revalidate();
@@ -565,7 +579,7 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
         PrintWriter out = null;
-        String SQL = makeSQL();
+        DBM.DB_pstm = makeSQL();
         String csvFile = "";
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files (*.csv)", "csv");   //jFileChooser1 확장자 지정
@@ -586,11 +600,13 @@ public class MainFrame extends javax.swing.JFrame {
                 }
                 CSV_Export.writeLine(out, Arrays.asList("no", "tem", "hum", "datetime"));   //csv파일 헤더
                 try {
-                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);  //쿼리를 날리고 while문으로 csv파일 내용 작성
+                    //DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);  //쿼리를 날리고 while문으로 csv파일 내용 작성
+                    DBM.DB_rs = DBM.DB_pstm.executeQuery();
                     while(DBM.DB_rs.next()){
                         CSV_Export.writeLine(out, Arrays.asList(String.valueOf(DBM.DB_rs.getRow()), DBM.DB_rs.getString("tem"), DBM.DB_rs.getString("hum"), DBM.DB_rs.getString("datetime")));
                     }
                     DBM.DB_rs.close();
+                    DBM.DB_pstm.close();
                 } catch (Exception e) {
                     System.out.println("SQLException : " + e.getMessage());
                 }

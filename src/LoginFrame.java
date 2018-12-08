@@ -1,5 +1,9 @@
 
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 public class LoginFrame extends javax.swing.JFrame {
@@ -26,7 +30,6 @@ public class LoginFrame extends javax.swing.JFrame {
         try {
             DBM.strURL += "Member_db";
             DBM.dbOpen();
-            //DBM.dbClose();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -34,11 +37,14 @@ public class LoginFrame extends javax.swing.JFrame {
     
     public boolean loginCheck(String id, String pw) {
         boolean result = false;
-        /*SQL = "Select count(*) as login, job from member";
-        SQL += makeSQLWhere(id, pw);*/
-        SQL = "call signin_pro('" + id + "','" + pw + "')";
+        SQL = "call signin_pro(?, ?)";
         try {
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+            DBM.DB_pstm.setString(1, id);
+            DBM.DB_pstm.setString(2, pw);
+            
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
+            
             while(DBM.DB_rs.next()){
                 switch(DBM.DB_rs.getString("count")){
                     case "0":
@@ -53,6 +59,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
             DBM.DB_rs.close();
+            DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -380,14 +387,15 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void btnIDCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIDCheckActionPerformed
         String SignupID = txtSignupID.getText();
-        String SignupSQL = "Select count(*) as signup from member where id = '";
-        SignupSQL += SignupID + "'";
+        String SignupSQL = "Select count(*) as signup from member where id = ?";
         if (SignupID.length() == 0) {
             JOptionPane.showMessageDialog(null, "아이디를 입력하세요.", "아이디 입력", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SignupSQL);
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SignupSQL);
+            DBM.DB_pstm.setString(1, SignupID);
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
             while(DBM.DB_rs.next()){
                 switch(DBM.DB_rs.getString("signup")){
                     case "0":
@@ -405,6 +413,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         DBM.DB_rs.close();
+        DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -429,18 +438,29 @@ public class LoginFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSignupPCKeyPressed
 
     private void btnTrySignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTrySignupActionPerformed
+        int success = 0;
         if (SignupCheck) {
             if (SignupCheckedID.equals(txtSignupID.getText())){
                 if (txtSignupPW.getText().equals(txtSignupPC.getText())){
                     if (!txtSignupPW.getText().equals("")){
                         try {
-                            String insertSQL = "Insert into member(id, pw) values ('" + SignupCheckedID + "', password('" + txtSignupPW.getText() + "'))";
-                            DBM.DB_stmt.executeQuery(insertSQL);
+                            String insertSQL = "call signup_pro(?, ?)";
+                            DBM.DB_pstm = DBM.DB_con.prepareStatement(insertSQL);
+                            DBM.DB_pstm.setString(1, SignupCheckedID);
+                            DBM.DB_pstm.setString(2, txtSignupPW.getText());
+            
+                            success = DBM.DB_pstm.executeUpdate();
+                            DBM.DB_pstm.close();
                         } catch (Exception e) {
                             System.out.println("SQLException : " + e.getMessage());
-                        }
-                        JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.", "회원가입", JOptionPane.INFORMATION_MESSAGE);
-                        Signup.dispose();
+                        } finally {
+                            if (success > 0) {
+                                JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.", "회원가입", JOptionPane.INFORMATION_MESSAGE);
+                                Signup.dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(null, "회원가입 실패.", "회원가입", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }  
                     } else {
                         JOptionPane.showMessageDialog(null, "비밀번호를 입력하세요.", "회원가입", JOptionPane.ERROR_MESSAGE);
                     }
