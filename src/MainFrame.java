@@ -496,8 +496,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void DrawChart() {
         String title = "title";
         ArrayList<ChartElement> list = new ArrayList<ChartElement>();
-        int width = Panel_Chart_layer.getWidth() - 50;   //1220
-        int height = Panel_Chart_layer.getHeight() - 120;  //400
 
         try {
             DBM.DB_pstm = makeSQL();
@@ -510,10 +508,9 @@ public class MainFrame extends javax.swing.JFrame {
             DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
-        }
+        } 
 
-        browser.loadHTML(new GoogleAPI().getLineChart(title, list, width, height));
-                
+        browser.loadHTML(new GoogleAPI().getLineChart(title, list));
         browserView.setSize(Panel_Chart_layer.getWidth()-20, Panel_Chart_layer.getHeight()-15);
         Panel_Chart_layer.revalidate();
         Panel_Chart_layer.repaint();
@@ -623,7 +620,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportActionPerformed
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        DrawChart();
+        //DrawChart();
     }//GEN-LAST:event_formComponentResized
 
     public static void main(String args[]) {
