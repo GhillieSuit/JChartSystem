@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class LoginFrame extends javax.swing.JFrame {
 
-    ImageIcon img = new ImageIcon("./src/icon.png");
+    ImageIcon img = new ImageIcon("./src/img/icon.png");
     DB_CONN DBM = new DB_CONN();
     String SQL = "";
     String SignupCheckedID = "";
@@ -31,15 +31,6 @@ public class LoginFrame extends javax.swing.JFrame {
             System.out.println("SQLException : " + e.getMessage());
         }
     }
-    
-    /*public String makeSQLWhere(String id, String pw) {
-        String where = " where id = '";
-        where += id;
-        where += "' and pw = password('";
-        where += pw;
-        where += "')";
-        return where;
-    }*/
     
     public boolean loginCheck(String id, String pw) {
         boolean result = false;
@@ -80,9 +71,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 System.out.println("SQLException : " + e.getMessage());
             }
             
-            MainFrame mainform = new MainFrame();
+            MainFrame mainform = new MainFrame(this);
             mainform.show();
-            //Main main = new Main(); 
         } else {
             JOptionPane.showMessageDialog(null, "아이디 혹은 비밀번호가 유효하지 않습니다.", "로그인 오류", JOptionPane.ERROR_MESSAGE);
         }
@@ -340,7 +330,7 @@ public class LoginFrame extends javax.swing.JFrame {
         getContentPane().add(lblTitle);
         lblTitle.setBounds(220, 160, 80, 30);
 
-        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/login_bg.jpg"))); // NOI18N
+        background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/login_bg.jpg"))); // NOI18N
         getContentPane().add(background);
         background.setBounds(0, 0, 800, 600);
 
@@ -520,8 +510,8 @@ public class LoginFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblSignupPW;
     private javax.swing.JLabel lblSignupevent;
     private javax.swing.JLabel lblTitle;
-    private javax.swing.JTextField txtID;
-    private javax.swing.JPasswordField txtPW;
+    public javax.swing.JTextField txtID;
+    public javax.swing.JPasswordField txtPW;
     private javax.swing.JTextField txtSignupID;
     private javax.swing.JPasswordField txtSignupPC;
     private javax.swing.JPasswordField txtSignupPW;

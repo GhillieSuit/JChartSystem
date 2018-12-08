@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 
 public class GoogleAPI {
+  
     public String getLineChart(String title, ArrayList<ChartElement> list, int width, int height) {
         int i = 0;
         String htmlString = 
@@ -24,12 +25,6 @@ public class GoogleAPI {
                 "      data.addColumn('number', \"Humidity\");\n" +
                 "\n" +
                 "      data.addRows([\n";
-                /*for(i = 0; i < list.size()-1; i++) {
-                        htmlString += "[new Date(" + list.get(i).getName().substring(0,4) + ", " + list.get(i).getName().substring(5,7) + ", " + list.get(i).getName().substring(8,10) + ", "
-                                                       + list.get(i).getName().substring(11,13) + ", "+ list.get(i).getName().substring(14,16) + ", 00),"                   
-                                                       + list.get(i).getValue1() + ",'tem'," + list.get(i).getValue1() + ", " 
-                                                       + list.get(i).getValue2() + ",'hum'," + list.get(i).getValue2() + "],\n";
-                    }*/
                 for(i = 0; i < list.size()-1; i++) {
                         htmlString += "[new Date(" + list.get(i).getName().substring(0,4) + ", " + list.get(i).getName().substring(5,7) + ", " + list.get(i).getName().substring(8,10) + ", "
                                                        + list.get(i).getName().substring(11,13) + ", "+ list.get(i).getName().substring(14,16) + ", 00), "                   
@@ -98,7 +93,9 @@ public class GoogleAPI {
                 "    <button id=\"ClassicChart\">Classic Chart</button>\n" +
                 "    <button id=\"MaterialChart\">Material Chart</button>\n" +
                 "    <br><br>\n" +
-                "    <div id=\"chart_div\"></div>\n" +
+                "    <center>\n" +
+                "      <div id=\"chart_div\"></div>\n" +
+                "    </center>\n" +
                 "   \n" +
                 "  </body>\n" +
                 "</html>";

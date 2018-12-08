@@ -3,34 +3,40 @@ import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
 import com.teamdev.jxbrowser.chromium.events.LoadAdapter;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
-import java.awt.BorderLayout;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.event.ChangeListener;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainFrame extends javax.swing.JFrame {
+    LoginFrame loginform = null;
     private Browser browser = new Browser();
     private BrowserView browserView = new BrowserView(browser);
-    ImageIcon img = new ImageIcon("./src/icon.png");
+    Calendar cal = Calendar.getInstance();
+    ImageIcon img = new ImageIcon("./src/img/icon.png");
     Timer m_timer = new Timer();
     DB_CONN DBM = new DB_CONN();
     
     public MainFrame() {
         initComponents();
+        initMainFrame();
+    }
+
+    public MainFrame(LoginFrame loginform) {
+        this.loginform = loginform;
+        initComponents();
+        initMainFrame();
+    }
+    
+    private void initMainFrame(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Chart System");
         setVisible(true);
@@ -38,9 +44,11 @@ public class MainFrame extends javax.swing.JFrame {
         setSize(1300,760 );  
         setLocationRelativeTo(null);
         setIconImage(img.getImage());
+        getContentPane().setBackground(Color.white);
         Panel_Chart.setComponentZOrder(DateChooserTo, 0);
         Panel_Chart.setComponentZOrder(DateChooserFrom, 1);
         Panel_Chart.setComponentZOrder(Panel_Chart_layer, 2);
+        lblUser.setText("User : " + loginform.txtID.getText());
         
         try {
             DBM.strURL += "Data_db";
@@ -86,13 +94,13 @@ public class MainFrame extends javax.swing.JFrame {
         DateTime();
         m_timer.schedule(m_task, 0, 60000);
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jFileChooser1 = new javax.swing.JFileChooser();
-        jButton1 = new javax.swing.JButton();
+        btnLogout = new javax.swing.JButton();
         TabbedPane1 = new javax.swing.JTabbedPane();
         Panel_Main = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -114,20 +122,27 @@ public class MainFrame extends javax.swing.JFrame {
         TimeMinuteTo = new javax.swing.JSpinner();
         lblFromMinute = new javax.swing.JLabel();
         lblToMinute = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
+        lblUser = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1280, 720));
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnLogoutActionPerformed(evt);
             }
         });
 
@@ -186,7 +201,7 @@ public class MainFrame extends javax.swing.JFrame {
         Panel_Chart_layer.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Chart", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("굴림", 1, 18))); // NOI18N
         Panel_Chart_layer.setMinimumSize(new java.awt.Dimension(1251, 0));
         Panel_Chart_layer.setName(""); // NOI18N
-        Panel_Chart_layer.setPreferredSize(new java.awt.Dimension(1251, 558));
+        Panel_Chart_layer.setPreferredSize(new java.awt.Dimension(1251, 526));
 
         javax.swing.GroupLayout Panel_Chart_layerLayout = new javax.swing.GroupLayout(Panel_Chart_layer);
         Panel_Chart_layer.setLayout(Panel_Chart_layerLayout);
@@ -196,11 +211,14 @@ public class MainFrame extends javax.swing.JFrame {
         );
         Panel_Chart_layerLayout.setVerticalGroup(
             Panel_Chart_layerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 496, Short.MAX_VALUE)
+            .addGap(0, 486, Short.MAX_VALUE)
         );
 
         btnDraw.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
         btnDraw.setText("Draw");
+        btnDraw.setMaximumSize(new java.awt.Dimension(85, 25));
+        btnDraw.setMinimumSize(new java.awt.Dimension(85, 25));
+        btnDraw.setPreferredSize(new java.awt.Dimension(85, 25));
         btnDraw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDrawActionPerformed(evt);
@@ -234,7 +252,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblFromHour.setText("시");
 
         TimeHourTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
-        TimeHourTo.setModel(new javax.swing.SpinnerNumberModel(0, 0, 23, 1));
+        TimeHourTo.setModel(new javax.swing.SpinnerNumberModel(0, -1, 24, 1));
         TimeHourTo.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 TimeHourToStateChanged(evt);
@@ -245,7 +263,7 @@ public class MainFrame extends javax.swing.JFrame {
         lblToHour.setText("시");
 
         TimeMinuteFrom.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
-        TimeMinuteFrom.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        TimeMinuteFrom.setModel(new javax.swing.SpinnerNumberModel(0, -1, 60, 1));
         TimeMinuteFrom.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 TimeMinuteFromStateChanged(evt);
@@ -253,7 +271,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         TimeMinuteTo.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
-        TimeMinuteTo.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        TimeMinuteTo.setModel(new javax.swing.SpinnerNumberModel(0, -1, 60, 1));
         TimeMinuteTo.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 TimeMinuteToStateChanged(evt);
@@ -266,11 +284,14 @@ public class MainFrame extends javax.swing.JFrame {
         lblToMinute.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
         lblToMinute.setText("분");
 
-        jButton2.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
-        jButton2.setText("Export");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnExport.setFont(new java.awt.Font("굴림", 1, 14)); // NOI18N
+        btnExport.setText("Export");
+        btnExport.setMaximumSize(new java.awt.Dimension(85, 25));
+        btnExport.setMinimumSize(new java.awt.Dimension(85, 25));
+        btnExport.setPreferredSize(new java.awt.Dimension(85, 25));
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnExportActionPerformed(evt);
             }
         });
 
@@ -281,66 +302,57 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(Panel_ChartLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(Panel_ChartLayout.createSequentialGroup()
-                        .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblFromHour)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblFromMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(Panel_ChartLayout.createSequentialGroup()
                                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(Panel_ChartLayout.createSequentialGroup()
                                         .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblFrom))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
+                                        .addComponent(TimeHourTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(lblToHour)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblToMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                        .addComponent(lblFromHour)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(lblFromMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                                .addGap(43, 43, 43)
-                                                .addComponent(jButton2))))))
-                            .addComponent(lblTo))
-                        .addGap(191, 825, Short.MAX_VALUE))))
+                                        .addComponent(lblToMinute, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(lblFrom)
+                                    .addComponent(lblTo))
+                                .addGap(18, 18, 18)
+                                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 799, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         Panel_ChartLayout.setVerticalGroup(
             Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Panel_ChartLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(Panel_ChartLayout.createSequentialGroup()
-                        .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblFromHour)
-                                .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblFromMinute))
-                            .addGroup(Panel_ChartLayout.createSequentialGroup()
-                                .addComponent(lblFrom)
-                                .addGap(2, 2, 2)
-                                .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(8, 8, 8)
-                        .addComponent(lblTo))
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addComponent(lblFrom)
+                .addGap(3, 3, 3)
+                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(TimeHourFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFromHour)
+                    .addComponent(DateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(TimeMinuteFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblFromMinute))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTo)
+                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(Panel_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -348,14 +360,17 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(lblToHour)
                         .addComponent(TimeMinuteTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(lblToMinute)
-                        .addComponent(btnDraw))
+                        .addComponent(btnDraw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(DateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
+                .addComponent(Panel_Chart_layer, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         TabbedPane1.addTab("Chart", Panel_Chart);
+
+        lblUser.setFont(new java.awt.Font("굴림", 0, 14)); // NOI18N
+        lblUser.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -364,14 +379,18 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(TabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton1))
+                .addComponent(lblUser, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnLogout))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(TabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -402,11 +421,19 @@ public class MainFrame extends javax.swing.JFrame {
         TimeMinuteTo.setValue(minute2);
     }
     
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //this.dispose();
-        
-        //System.exit(0);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        this.dispose();
+        loginform.txtID.setText("");            //텍스트필드 초기화
+        loginform.txtPW.setText("");
+        loginform.txtID.requestFocus();         //포커스 설정
+        loginform.txtID.setFocusable(true);
+        try {                                   //db 재연결
+            loginform.DBM.dbOpen();
+        } catch (IOException ex) {
+            System.out.println("SQLException : " + ex.getMessage());
+        }
+        loginform.show();
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
@@ -416,15 +443,11 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
-        String title = "title";
-        ArrayList<ChartElement> list = new ArrayList<ChartElement>();
-        int width = 1220;
-        int height = 400;
+    private String makeSQL(){
+        String SQL = "call pro_select_DHT(";
         String From = "";
         String To = "";
-
-        String SQL = "call pro_select_DHT(";     
+        
         SimpleDateFormat getDate = new SimpleDateFormat("yyyyMMdd");
         From = getDate.format(DateChooserFrom.getDate());
         if(String.valueOf(TimeHourFrom.getValue()).length() < 2)
@@ -445,6 +468,17 @@ public class MainFrame extends javax.swing.JFrame {
         To += "59";
         SQL += To + ")";
         
+        return SQL;
+    }
+    
+    private void DrawChart() {
+        String title = "title";
+        ArrayList<ChartElement> list = new ArrayList<ChartElement>();
+        int width = Panel_Chart_layer.getWidth() - 50;   //1220
+        int height = Panel_Chart_layer.getHeight() - 120;  //400
+
+        String SQL = makeSQL();
+        
         try {
             DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
             while(DBM.DB_rs.next()){
@@ -460,82 +494,118 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println(SQL);
                 
         Panel_Chart_layer.setLayout(new BorderLayout());
-        browserView.setSize(1251, 534);
+        browserView.setSize(Panel_Chart_layer.getWidth()-20, Panel_Chart_layer.getHeight()-15);
         Panel_Chart_layer.add(browserView, BorderLayout.CENTER);
         Panel_Chart_layer.setComponentZOrder(browserView, 0);
         Panel_Chart_layer.revalidate();
         Panel_Chart_layer.repaint();
+    }
+    
+    private void btnDrawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDrawActionPerformed
+        DrawChart();
     }//GEN-LAST:event_btnDrawActionPerformed
 
-    // <editor-fold defaultstate="collapsed" desc="TimePick">
+    // <editor-fold defaultstate="collapsed" desc="TimePick //TimePick StateChanged Event">
     private void TimeHourFromStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeHourFromStateChanged
-        int value = Integer.parseInt(String.valueOf(TimeHourFrom.getValue()));
-        if (value > 24) {
-            TimeHourFrom.setValue(23);
-        } else if (value > 23) {
-            TimeHourFrom.setValue(0);
-        } else if (value < -1) {
-            TimeHourFrom.setValue(0);
-        } else if (value < 0) {
-            TimeHourFrom.setValue(23);
+        int value = Integer.parseInt(String.valueOf(TimeHourFrom.getValue()));  //TimeHourFrom의 값을 가져옴
+        cal.setTime(DateChooserFrom.getDate()); //DateChooserFrom의 값을 가져와 cal 객체에 세팅
+        if (value > 23) {   //TimeHourFrom의 값이 23을 초과하면 
+            TimeHourFrom.setValue(0);   //TimeHourFrom값을 0으로 하고
+            cal.add(Calendar.DATE, 1);  //DateChooserFrom의 값을 하루 더한다.
+            DateChooserFrom.setDate(cal.getTime());
+        } else if (value < 0) {    //TimeHourFrom의 값이 0 미만이면 
+            TimeHourFrom.setValue(23);  //TimeHourFrom값을 23으로 하고
+            cal.add(Calendar.DATE, -1); //DateChooserFrom의 값을 하루 뺀다.
+            DateChooserFrom.setDate(cal.getTime());
         }
     }//GEN-LAST:event_TimeHourFromStateChanged
 
     private void TimeHourToStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeHourToStateChanged
         int value = Integer.parseInt(String.valueOf(TimeHourTo.getValue()));
+        cal.setTime(DateChooserTo.getDate());
         if (value > 23) {
-            TimeHourTo.setValue(23);
+            TimeHourTo.setValue(0);          
+            cal.add(Calendar.DATE, 1);
+            DateChooserTo.setDate(cal.getTime());
         } else if (value < 0) {
-            TimeHourTo.setValue(0);
+            TimeHourTo.setValue(23);
+            cal.add(Calendar.DATE, -1);
+            DateChooserTo.setDate(cal.getTime());
         }
     }//GEN-LAST:event_TimeHourToStateChanged
 
     private void TimeMinuteFromStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeMinuteFromStateChanged
-        int value = Integer.parseInt(String.valueOf(TimeMinuteFrom.getValue()));
-        if (value > 59) {
-            TimeMinuteFrom.setValue(59);
-        } else if (value < 0) {
-            TimeMinuteFrom.setValue(0);
+        int value = Integer.parseInt(String.valueOf(TimeMinuteFrom.getValue()));        //TimeMinuteFrom의 값을 int형으로 저장
+        int v_TimeHourFrom = Integer.parseInt(String.valueOf(TimeHourFrom.getValue())); //TimeHourFrom의 값을 int형으로 저장
+        if (value > 59) {                              //TimeMinuteFrom값이 59 초과이면
+            TimeMinuteFrom.setValue(0);                //TimeMinuteFrom 값을 0으로 하고
+            TimeHourFrom.setValue(v_TimeHourFrom + 1); //TimeHourFrom 값을 1증가한다.
+        } else if (value < 0) {                        //TimeMinuteFrom값이 0 미만이면
+            TimeMinuteFrom.setValue(59);               //TimeMinuteFrom 값을 59으로 하고
+            TimeHourFrom.setValue(v_TimeHourFrom - 1); //TimeHourFrom 값을 1감소한다.
         }
     }//GEN-LAST:event_TimeMinuteFromStateChanged
 
     private void TimeMinuteToStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TimeMinuteToStateChanged
         int value = Integer.parseInt(String.valueOf(TimeMinuteTo.getValue()));
+        int v_TimeHourTo = Integer.parseInt(String.valueOf(TimeHourTo.getValue()));
         if (value > 59) {
-            TimeMinuteTo.setValue(59);
-        } else if (value < 0) {
             TimeMinuteTo.setValue(0);
+            TimeHourTo.setValue(v_TimeHourTo + 1);
+        } else if (value < 0) {
+            TimeMinuteTo.setValue(59);
+            TimeHourTo.setValue(v_TimeHourTo - 1);
         }
     }//GEN-LAST:event_TimeMinuteToStateChanged
 // </editor-fold> 
     
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        FileWriter writer = null;
-        try {
-            String csvFile = "./abc.csv";
-            jFileChooser1.showSaveDialog(null);
-            writer = new FileWriter(csvFile);
-            CSV_Export.writeLine(writer, Arrays.asList("a", "b", "c", "d"));
-            //custom separator + quote
-            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bb,b", "cc,c"), ',', '"');
-            //custom separator + quote
-            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bbb", "cc,c"), '|', '\'');
-            //double-quotes
-            CSV_Export.writeLine(writer, Arrays.asList("aaa", "bbb", "cc\"c"));
-            writer.flush();
-            writer.close();
-        } catch (IOException ex) {
-            System.out.println("IOException : " + ex.getMessage());
-        } finally {
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        PrintWriter out = null;
+        String SQL = makeSQL();
+        String csvFile = "";
+        
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files (*.csv)", "csv");   //jFileChooser1 확장자 지정
+        jFileChooser1.setFileFilter(filter);    //jFileChooser1 확장자 필터 적용
+        jFileChooser1.setSelectedFile(new File("Export.csv"));  //jFileChooser1 default 파일명 지정
+        int sv = jFileChooser1.showSaveDialog(null);  //jFileChooser1 띄우고 버튼 액션을 int로 저장
+        if (sv == 0) {      // jFileChooser1가 저장 버튼을 눌렀을 때
+            //csvFile = jFileChooser1.getCurrentDirectory().getAbsolutePath();
+            csvFile += jFileChooser1.getSelectedFile();     //파일 디렉터리 및 파일명 저장
+            if (!csvFile.endsWith(".csv"))  //csv 확장자 확인 없으면 변환
+                csvFile += ".csv";
+            System.out.println(csvFile);
             try {
-                writer.close();
-            } catch (IOException ex) {
-                System.out.println("IOException : " + ex.getMessage());
-            }
+                File saveFile = new File(csvFile);
+                out = new PrintWriter(new FileWriter(saveFile, true));
+                if (!saveFile.exists()) {       //파일이 없으면 파일 생성
+                    saveFile.createNewFile();
+                }
+                CSV_Export.writeLine(out, Arrays.asList("no", "tem", "hum", "datetime"));   //csv파일 헤더
+                try {
+                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);  //쿼리를 날리고 while문으로 csv파일 내용 작성
+                    while(DBM.DB_rs.next()){
+                        CSV_Export.writeLine(out, Arrays.asList(String.valueOf(DBM.DB_rs.getRow()), DBM.DB_rs.getString("tem"), DBM.DB_rs.getString("hum"), DBM.DB_rs.getString("datetime")));
+                    }
+                    DBM.DB_rs.close();
+                } catch (Exception e) {
+                    System.out.println("SQLException : " + e.getMessage());
+                }
+                out.flush();    //csv파일 저장
+                JOptionPane.showMessageDialog(this, "저장완료", "저장완료", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                System.out.println("IOException : " + e.getMessage());
+            } finally {
+                out.close();
+            }      
+        } else {        //jFileChooser1에서 닫기를 눌렀을 때
+            return;
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnExportActionPerformed
 
-    
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        DrawChart();
+    }//GEN-LAST:event_formComponentResized
+
     public static void main(String args[]) {
 
         try {
@@ -574,8 +644,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSpinner TimeMinuteFrom;
     private javax.swing.JSpinner TimeMinuteTo;
     private javax.swing.JButton btnDraw;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnExport;
+    private javax.swing.JButton btnLogout;
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -585,6 +655,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblTo;
     private javax.swing.JLabel lblToHour;
     private javax.swing.JLabel lblToMinute;
+    private javax.swing.JLabel lblUser;
     private javax.swing.JTextField txtHum;
     private javax.swing.JTextField txtTem;
     // End of variables declaration//GEN-END:variables
