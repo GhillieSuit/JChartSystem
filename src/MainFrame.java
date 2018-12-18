@@ -12,8 +12,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -48,8 +46,6 @@ public class MainFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setIconImage(img.getImage());
         getContentPane().setBackground(Color.white);
-        /*Panel_Chart.setComponentZOrder(DateChooserTo, 0);
-        Panel_Chart.setComponentZOrder(DateChooserFrom, 1);*/
         Panel_Chart.setComponentZOrder(Panel_Chart_layer, 2);
         lblUser.setText("User : " + loginform.txtID.getText());
         
@@ -113,10 +109,13 @@ public class MainFrame extends javax.swing.JFrame {
         btnLogout = new javax.swing.JButton();
         TabbedPane1 = new javax.swing.JTabbedPane();
         Panel_Main = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtTem = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         txtHum = new javax.swing.JTextField();
+        main_background = new javax.swing.JLabel();
         Panel_Chart = new javax.swing.JPanel();
         Panel_Chart_layer = new javax.swing.JPanel();
         btnDraw = new javax.swing.JButton();
@@ -163,47 +162,75 @@ public class MainFrame extends javax.swing.JFrame {
 
         Panel_Main.setBackground(new java.awt.Color(255, 255, 255));
         Panel_Main.setPreferredSize(new java.awt.Dimension(1000, 700));
+        Panel_Main.setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255, 180));
+
+        jLabel1.setFont(new java.awt.Font("굴림", 1, 36)); // NOI18N
         jLabel1.setText("현재 온도");
 
         txtTem.setEditable(false);
-        txtTem.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        txtTem.setFont(new java.awt.Font("굴림", 1, 36)); // NOI18N
 
-        jLabel2.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtTem)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(11, 11, 11)
+                .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        Panel_Main.add(jPanel1);
+        jPanel1.setBounds(230, 260, 190, 120);
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255, 180));
+
+        jLabel2.setFont(new java.awt.Font("굴림", 1, 36)); // NOI18N
         jLabel2.setText("현재 습도");
 
         txtHum.setEditable(false);
-        txtHum.setFont(new java.awt.Font("굴림", 1, 24)); // NOI18N
+        txtHum.setFont(new java.awt.Font("굴림", 1, 36)); // NOI18N
 
-        javax.swing.GroupLayout Panel_MainLayout = new javax.swing.GroupLayout(Panel_Main);
-        Panel_Main.setLayout(Panel_MainLayout);
-        Panel_MainLayout.setHorizontalGroup(
-            Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Panel_MainLayout.createSequentialGroup()
-                .addGap(0, 276, Short.MAX_VALUE)
-                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 305, Short.MAX_VALUE)
-                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(454, 454, 454))
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtHum))
+                .addContainerGap())
         );
-        Panel_MainLayout.setVerticalGroup(
-            Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Panel_MainLayout.createSequentialGroup()
-                .addGap(207, 207, 207)
-                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
-                .addGroup(Panel_MainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtTem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(367, Short.MAX_VALUE))
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(11, 11, 11)
+                .addComponent(txtHum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        Panel_Main.add(jPanel2);
+        jPanel2.setBounds(610, 260, 190, 121);
+
+        main_background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/main_bg.jpg"))); // NOI18N
+        Panel_Main.add(main_background);
+        main_background.setBounds(0, 0, 1280, 660);
 
         TabbedPane1.addTab("Main", Panel_Main);
 
@@ -620,7 +647,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportActionPerformed
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        //DrawChart();
+        main_background.setSize(Panel_Main.getWidth(),Panel_Main.getHeight());
     }//GEN-LAST:event_formComponentResized
 
     public static void main(String args[]) {
@@ -666,6 +693,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblFromHour;
     private javax.swing.JLabel lblFromMinute;
@@ -673,6 +702,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblToHour;
     private javax.swing.JLabel lblToMinute;
     private javax.swing.JLabel lblUser;
+    private javax.swing.JLabel main_background;
     private javax.swing.JTextField txtHum;
     private javax.swing.JTextField txtTem;
     // End of variables declaration//GEN-END:variables

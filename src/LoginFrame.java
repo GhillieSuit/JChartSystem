@@ -332,10 +332,10 @@ public class LoginFrame extends javax.swing.JFrame {
 
         lblTitle.setBackground(new java.awt.Color(255, 255, 255));
         lblTitle.setFont(new java.awt.Font("굴림", 1, 18)); // NOI18N
-        lblTitle.setForeground(new java.awt.Color(255, 255, 255));
         lblTitle.setText("Login");
+        lblTitle.setOpaque(true);
         getContentPane().add(lblTitle);
-        lblTitle.setBounds(220, 160, 80, 30);
+        lblTitle.setBounds(220, 170, 50, 20);
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/login_bg.jpg"))); // NOI18N
         getContentPane().add(background);
