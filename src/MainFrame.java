@@ -48,8 +48,8 @@ public class MainFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setIconImage(img.getImage());
         getContentPane().setBackground(Color.white);
-        Panel_Chart.setComponentZOrder(DateChooserTo, 0);
-        Panel_Chart.setComponentZOrder(DateChooserFrom, 1);
+        /*Panel_Chart.setComponentZOrder(DateChooserTo, 0);
+        Panel_Chart.setComponentZOrder(DateChooserFrom, 1);*/
         Panel_Chart.setComponentZOrder(Panel_Chart_layer, 2);
         lblUser.setText("User : " + loginform.txtID.getText());
         
@@ -502,7 +502,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             DBM.DB_rs = DBM.DB_pstm.executeQuery();
             while(DBM.DB_rs.next()){
-                list.add(new ChartElement(DBM.DB_rs.getString("datetime"), DBM.DB_rs.getInt("tem"), DBM.DB_rs.getInt("hum")));
+                list.add(new ChartElement(DBM.DB_rs.getString("datetime"), DBM.DB_rs.getFloat("tem"), DBM.DB_rs.getFloat("hum")));
             }
             DBM.DB_rs.close();
             DBM.DB_pstm.close();

@@ -2,27 +2,27 @@
 public class ChartElement {
     
     public String name;
-    public int value1;
-    public int value2;
-    public int value3;
-    public int value4;
+    public float value1;
+    public float value2;
+    public float value3;
+    public float value4;
     
-    public ChartElement(String name, int value1) {
+    public ChartElement(String name, float value1) {
         this.name = name;
         this.value1 = value1;
     }
-    public ChartElement(String name, int value1, int value2) {
+    public ChartElement(String name, float value1, float value2) {
         this.name = name;
         this.value1 = value1;
         this.value2 = value2;
     }
-    public ChartElement(String name, int value1, int value2, int value3) {
+    public ChartElement(String name, float value1, float value2, float value3) {
         this.name = name;
         this.value1 = value1;
         this.value2 = value2;
         this.value3 = value3;
     }
-    public ChartElement(String name, int value1, int value2, int value3, int value4) {
+    public ChartElement(String name, float value1, float value2, float value3, float value4) {
         this.name = name;
         this.value1 = value1;
         this.value2 = value2;
@@ -33,16 +33,16 @@ public class ChartElement {
     public String getName() {
         return name;
     }  
-    public int getValue1() {
+    public float getValue1() {
         return value1;
     }
-    public int getValue2() {
+    public float getValue2() {
         return value2;
     }
-    public int getValue3() {
+    public float getValue3() {
         return value3;
     }
-    public int getValue4() {
+    public float getValue4() {
         return value4;
     }
     
