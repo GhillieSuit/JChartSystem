@@ -28,7 +28,7 @@ public class LoginFrame extends javax.swing.JFrame {
         txtSignupPW.setDocument(new Limit(20));
         
         try {
-            DBM.strURL += "Member_db";
+            DBM.strURL += "inhatc_db";
             DBM.dbOpen();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
@@ -37,16 +37,12 @@ public class LoginFrame extends javax.swing.JFrame {
     
     public boolean loginCheck(String id, String pw) {
         boolean result = false;
-        SQL = "call signin_pro(?, ?)";
+        SQL = "select count(*) from member where id = '" + id + "' and pw = password('" + pw + "')";
         try {
-            DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
-            DBM.DB_pstm.setString(1, id);
-            DBM.DB_pstm.setString(2, pw);
-            
-            DBM.DB_rs = DBM.DB_pstm.executeQuery();
+            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
             
             while(DBM.DB_rs.next()){
-                switch(DBM.DB_rs.getString("count")){
+                switch(DBM.DB_rs.getString("count(*)")){
                     case "0":
                         result = false;
                         break;
@@ -59,7 +55,6 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
             DBM.DB_rs.close();
-            DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -387,15 +382,13 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void btnIDCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIDCheckActionPerformed
         String SignupID = txtSignupID.getText();
-        String SignupSQL = "Select count(*) as signup from member where id = ?";
+        String SignupSQL = "Select count(*) as signup from member where id = '" + SignupID + "'";
         if (SignupID.length() == 0) {
             JOptionPane.showMessageDialog(null, "아이디를 입력하세요.", "아이디 입력", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
-            DBM.DB_pstm = DBM.DB_con.prepareStatement(SignupSQL);
-            DBM.DB_pstm.setString(1, SignupID);
-            DBM.DB_rs = DBM.DB_pstm.executeQuery();
+            DBM.DB_rs = DBM.DB_stmt.executeQuery(SignupSQL);
             while(DBM.DB_rs.next()){
                 switch(DBM.DB_rs.getString("signup")){
                     case "0":
@@ -413,7 +406,6 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         DBM.DB_rs.close();
-        DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -444,13 +436,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 if (txtSignupPW.getText().equals(txtSignupPC.getText())){
                     if (!txtSignupPW.getText().equals("")){
                         try {
-                            String insertSQL = "call signup_pro(?, ?)";
-                            DBM.DB_pstm = DBM.DB_con.prepareStatement(insertSQL);
-                            DBM.DB_pstm.setString(1, SignupCheckedID);
-                            DBM.DB_pstm.setString(2, txtSignupPW.getText());
-            
-                            success = DBM.DB_pstm.executeUpdate();
-                            DBM.DB_pstm.close();
+                            String insertSQL = "insert into member values('" + SignupCheckedID + "', password('" + txtSignupPW.getText() + "'))";
+                            success = DBM.DB_stmt.executeUpdate(insertSQL);
                         } catch (Exception e) {
                             System.out.println("SQLException : " + e.getMessage());
                         } finally {
@@ -488,6 +475,7 @@ public class LoginFrame extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        System.setProperty("jxbrowser.license.key", "1BNDHFSC1FVNKU8YRT9R7DSJUDU2U1ELTUVOTWL609ET3OFVBFRND30M2G576QFHUNRQP1");
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
