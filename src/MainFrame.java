@@ -616,7 +616,7 @@ public class MainFrame extends javax.swing.JFrame {
                 csvFile += ".csv";
             System.out.println(csvFile);
             try {
-                File saveFile = new File(FilenameUtils.getName(csvFile));
+                File saveFile = new File(csvFile);
                 out = new PrintWriter(new FileWriter(saveFile, true));
                 if (!saveFile.exists()) {       //파일이 없으면 파일 생성
                     saveFile.createNewFile();
