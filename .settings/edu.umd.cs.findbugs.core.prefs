@@ -1,11 +1,11 @@
 #FindBugs User Preferences
-#Wed Jun 03 02:07:25 KST 2020
+#Wed Jun 03 01:19:04 KST 2020
 detectorExplicitSerialization=ExplicitSerialization|true
 detectorMultithreadedInstanceAccess=MultithreadedInstanceAccess|true
 detectorWrongMapIterator=WrongMapIterator|true
 detectorSpringMvcEndpointDetector=SpringMvcEndpointDetector|true
 detectorUselessSubclassMethod=UselessSubclassMethod|false
-filter_settings=Low|SECURITY|false|20
+filter_settings=Low|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MALICIOUS_CODE,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|20
 detectorOgnlInjectionDetector=OgnlInjectionDetector|true
 detectorUnencryptedSocketDetector=UnencryptedSocketDetector|true
 detectorReDosDetector=ReDosDetector|true
@@ -72,7 +72,7 @@ detectorReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass=ReadOfInstan
 detectorTrustBoundaryViolationAttributeDetector=TrustBoundaryViolationAttributeDetector|true
 detectorTDesUsageDetector=TDesUsageDetector|true
 detectorFindComparatorProblems=FindComparatorProblems|true
-filter_settings_neg=BAD_PRACTICE,MALICIOUS_CODE,PERFORMANCE,CORRECTNESS,STYLE,EXPERIMENTAL,NOISE,MT_CORRECTNESS,I18N|
+filter_settings_neg=NOISE|
 detectorInefficientMemberAccess=InefficientMemberAccess|false
 detectorNumberConstructor=NumberConstructor|true
 detectorFindUncalledPrivateMethods=FindUncalledPrivateMethods|true

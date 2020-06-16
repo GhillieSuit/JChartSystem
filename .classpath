@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/jxbrowser-7.8.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-swing-7.8.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-win64-7.8.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.7.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

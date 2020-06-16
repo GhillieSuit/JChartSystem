@@ -2,7 +2,6 @@ import static com.teamdev.jxbrowser.engine.RenderingMode.*;
 import com.teamdev.jxbrowser.browser.Browser;
 import com.teamdev.jxbrowser.engine.Engine;
 import com.teamdev.jxbrowser.engine.EngineOptions;
-import com.teamdev.jxbrowser.event.*;
 import com.teamdev.jxbrowser.view.swing.BrowserView;
 import java.awt.*;
 import java.io.*;
@@ -17,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FilenameUtils;
 
 public class MainFrame extends javax.swing.JFrame {
     LoginFrame loginform = null;
@@ -75,13 +75,15 @@ public class MainFrame extends javax.swing.JFrame {
             public void run() {
                 String SQL = "select * from dataset order by datatime desc limit 1";
                 try {
-                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+                    DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+                    DBM.DB_rs = DBM.DB_pstm.executeQuery();
                     while(DBM.DB_rs.next()){
                         txtTem.setText(DBM.DB_rs.getString("tem") + " ℃");
                         txtHum.setText(DBM.DB_rs.getString("hum") + " %");
 
                     }
                     DBM.DB_rs.close();
+                    DBM.DB_pstm.close();
                     System.out.println("Main refreshed");
                 } catch (SQLException ex) {
                     txtTem.setText("N / A");
@@ -481,8 +483,8 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private String makeSQL(){
-    	String SQL = "";
+    private PreparedStatement makeSQL(){
+        String SQL = "select * from dataset where datatime between ? and ? order by datatime desc";
         String From = "";
         String To = "";
         
@@ -505,9 +507,16 @@ public class MainFrame extends javax.swing.JFrame {
             To += "0";
         To += TimeMinuteTo.getValue();
         To += "59";
-
-        SQL = "select * from dataset where datatime between " + From + " and " + To + " order by datatime desc";
-        return SQL;
+        
+        try {
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+            DBM.DB_pstm.setString(1, From);
+            DBM.DB_pstm.setString(2, To);
+        } catch (SQLException ex) {
+            System.out.println("SQLException : " + ex.getMessage());
+        }
+  
+        return DBM.DB_pstm;
     }
     
     private void DrawChart() {
@@ -515,13 +524,14 @@ public class MainFrame extends javax.swing.JFrame {
         ArrayList<ChartElement> list = new ArrayList<ChartElement>();
 
         try {
-            String SQL = makeSQL();
+            DBM.DB_pstm = makeSQL();
             
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
             while(DBM.DB_rs.next()){
                 list.add(new ChartElement(DBM.DB_rs.getString("datatime"), DBM.DB_rs.getFloat("tem"), DBM.DB_rs.getFloat("hum")));
             }
             DBM.DB_rs.close();
+            DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         } 
@@ -593,7 +603,7 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
         PrintWriter out = null;
-        String SQL = makeSQL();
+        DBM.DB_pstm = makeSQL();
         String csvFile = "";
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files (*.csv)", "csv");   //jFileChooser1 확장자 지정
@@ -601,13 +611,12 @@ public class MainFrame extends javax.swing.JFrame {
         jFileChooser1.setSelectedFile(new File("Export.csv"));  //jFileChooser1 default 파일명 지정
         int sv = jFileChooser1.showSaveDialog(null);  //jFileChooser1 띄우고 버튼 액션을 int로 저장
         if (sv == 0) {      // jFileChooser1가 저장 버튼을 눌렀을 때
-            //csvFile = jFileChooser1.getCurrentDirectory().getAbsolutePath();
             csvFile += jFileChooser1.getSelectedFile();     //파일 디렉터리 및 파일명 저장
             if (!csvFile.endsWith(".csv"))  //csv 확장자 확인 없으면 변환
                 csvFile += ".csv";
             System.out.println(csvFile);
             try {
-                File saveFile = new File(csvFile);
+                File saveFile = new File(FilenameUtils.getName(csvFile));
                 out = new PrintWriter(new FileWriter(saveFile, true));
                 if (!saveFile.exists()) {       //파일이 없으면 파일 생성
                     saveFile.createNewFile();
@@ -615,11 +624,12 @@ public class MainFrame extends javax.swing.JFrame {
                 CSV_Export.writeLine(out, Arrays.asList("no", "tem", "hum", "datetime"));   //csv파일 헤더
                 try {
                     //DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);  //쿼리를 날리고 while문으로 csv파일 내용 작성
-                    DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+                    DBM.DB_rs = DBM.DB_pstm.executeQuery();
                     while(DBM.DB_rs.next()){
                         CSV_Export.writeLine(out, Arrays.asList(String.valueOf(DBM.DB_rs.getRow()), DBM.DB_rs.getString("tem"), DBM.DB_rs.getString("hum"), DBM.DB_rs.getString("datatime")));
                     }
                     DBM.DB_rs.close();
+                    DBM.DB_pstm.close();
                 } catch (Exception e) {
                     System.out.println("SQLException : " + e.getMessage());
                 }

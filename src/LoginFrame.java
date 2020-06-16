@@ -1,16 +1,11 @@
 
 import java.awt.event.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 public class LoginFrame extends javax.swing.JFrame {
 
     ImageIcon img = new ImageIcon("./src/img/icon.png");
     DB_CONN DBM = new DB_CONN();
-    String SQL = "";
     String SignupCheckedID = "";
     boolean SignupCheck = false;
     
@@ -37,9 +32,13 @@ public class LoginFrame extends javax.swing.JFrame {
     
     public boolean loginCheck(String id, String pw) {
         boolean result = false;
-        SQL = "select count(*) from member where id = '" + id + "' and pw = password('" + pw + "')";
+        final String SQL = "select count(*) from member where id = ? and pw = password(?)";
         try {
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SQL);
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SQL);
+            DBM.DB_pstm.setString(1, id);
+            DBM.DB_pstm.setString(2, pw);
+            
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
             
             while(DBM.DB_rs.next()){
                 switch(DBM.DB_rs.getString("count(*)")){
@@ -55,6 +54,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
             DBM.DB_rs.close();
+            DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -382,13 +382,15 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void btnIDCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIDCheckActionPerformed
         String SignupID = txtSignupID.getText();
-        String SignupSQL = "Select count(*) as signup from member where id = '" + SignupID + "'";
+        final String SignupSQL = "Select count(*) as signup from member where id = ?";
         if (SignupID.length() == 0) {
             JOptionPane.showMessageDialog(null, "아이디를 입력하세요.", "아이디 입력", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
-            DBM.DB_rs = DBM.DB_stmt.executeQuery(SignupSQL);
+            DBM.DB_pstm = DBM.DB_con.prepareStatement(SignupSQL);
+            DBM.DB_pstm.setString(1, SignupID);
+            DBM.DB_rs = DBM.DB_pstm.executeQuery();
             while(DBM.DB_rs.next()){
                 switch(DBM.DB_rs.getString("signup")){
                     case "0":
@@ -406,6 +408,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         DBM.DB_rs.close();
+        DBM.DB_pstm.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -436,8 +439,13 @@ public class LoginFrame extends javax.swing.JFrame {
                 if (txtSignupPW.getText().equals(txtSignupPC.getText())){
                     if (!txtSignupPW.getText().equals("")){
                         try {
-                            String insertSQL = "insert into member values('" + SignupCheckedID + "', password('" + txtSignupPW.getText() + "'))";
-                            success = DBM.DB_stmt.executeUpdate(insertSQL);
+                            final String insertSQL = "insert into member values(?, password(?))";
+                            DBM.DB_pstm = DBM.DB_con.prepareStatement(insertSQL);
+                            DBM.DB_pstm.setString(1, SignupCheckedID);
+                            DBM.DB_pstm.setString(2, txtSignupPW.getText());
+            
+                            success = DBM.DB_pstm.executeUpdate();
+                            DBM.DB_pstm.close();
                         } catch (Exception e) {
                             System.out.println("SQLException : " + e.getMessage());
                         } finally {
