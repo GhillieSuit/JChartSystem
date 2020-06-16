@@ -11,21 +11,34 @@ import java.util.*;
  * @author dbstk
  */
 public class DB_CONN {
-    String strDriver = "org.mariadb.jdbc.Driver";
-    String strURL = "jdbc:mariadb://thor.tk:3306/";
-    String strUser = "inhatc";
-    String strPW = "inhatc1234";
+    String strDriver;
+    String strURL;
+    String strUser;
+    String strPW;
     
     Connection DB_con;
-    Statement DB_stmt;
-    //PreparedStatement DB_pstm;
+    PreparedStatement DB_pstm;
     ResultSet DB_rs;
+    
+    public DB_CONN() {
+    	String resource = "config/DB.properties";
+    	Properties properties = new Properties();
+    	try {
+            InputStream reader = getClass().getResourceAsStream(resource);
+            properties.load(reader);
+            this.strDriver = properties.getProperty("driver");
+            this.strURL = properties.getProperty("url");
+            this.strUser = properties.getProperty("username");
+            this.strPW = properties.getProperty("password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     public void dbOpen() throws IOException{
         try {
             Class.forName(strDriver);
             DB_con = DriverManager.getConnection(strURL, strUser, strPW);
-            DB_stmt = DB_con.createStatement();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
@@ -33,8 +46,7 @@ public class DB_CONN {
     
     public void dbClose() throws IOException{
         try {
-            DB_stmt.close();
-            //DB_con.close();
+            DB_con.close();
         } catch (Exception e) {
             System.out.println("SQLException : " + e.getMessage());
         }
